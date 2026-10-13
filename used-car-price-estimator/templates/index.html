@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Used Car Price Estimator | Machine Learning Project</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Chart.js for Evaluation Dashboard -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="theme-dark">
+  <!-- Navigation Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-logo-icon">
+          <i class="fa-solid fa-car-side"></i>
+        </div>
+        <div>
+          <div class="brand-title">AutoValuate <span class="badge badge-accent">ML 2026</span></div>
+          <div class="brand-subtitle">Used Car Fair Market Price Estimator</div>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a href="#estimator" class="nav-link active"><i class="fa-solid fa-calculator"></i> Estimator</a>
+        <a href="#dashboard" class="nav-link"><i class="fa-solid fa-chart-line"></i> Model Dashboard</a>
+        <a href="#dataset" class="nav-link"><i class="fa-solid fa-database"></i> Dataset</a>
+        <a href="#api-docs" class="nav-link"><i class="fa-solid fa-code"></i> REST API</a>
+        <a href="#about" class="nav-link"><i class="fa-solid fa-circle-info"></i> Project Info</a>
+      </nav>
+
+      <div class="header-actions">
+        <button id="theme-toggle" class="btn-icon" title="Toggle Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <a href="#estimator" class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-bolt"></i> Value My Car
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner / Project Academic Ribbon -->
+  <section class="academic-ribbon">
+    <div class="container ribbon-content">
+      <div class="ribbon-item">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <span><strong>KLH University</strong> (Bowrampet Campus) &bull; Machine Learning Course Project</span>
+      </div>
+      <div class="ribbon-item">
+        <i class="fa-solid fa-user-tie"></i>
+        <span>Under the Guidance of: <strong>Dr. G. S. Raghavendra Sir</strong></span>
+      </div>
+      <div class="ribbon-item">
+        <i class="fa-solid fa-users"></i>
+        <span>Team: <strong>B Rishik</strong> (2520030314), <strong>Rohan V</strong> (2520030558), <strong>M Nityay</strong> (2520030618)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <div class="hero-tag">
+          <i class="fa-solid fa-brain"></i> Supervised Regression Pipeline &bull; Scikit-Learn
+        </div>
+        <h1 class="hero-title">
+          Data-Driven Fair Market Valuation for Pre-Owned Vehicles
+        </h1>
+        <p class="hero-desc">
+          Eliminate subjective dealer markups and arbitrary pricing. Our regression machine learning system estimates fair market resale prices within milliseconds using vehicle age, mileage, brand equity, and technical specifications.
+        </p>
+        <div class="hero-stats-row">
+          <div class="stat-pill">
+            <span class="stat-num" id="r2-badge">{{ metadata.achieved_accuracy }}</span>
+            <span class="stat-label">Model Accuracy (R²)</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-num">&lt; 15 ms</span>
+            <span class="stat-label">Inference Latency</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-num">₹ 0.37L</span>
+            <span class="stat-label">Mean Absolute Error</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-card-preview">
+        <div class="card glass-card blueprint-hero-card">
+          <div class="blueprint-header">
+            <div class="blueprint-status">
+              <span class="pulse-dot"></span>
+              <span class="blueprint-status-text">NEURAL VALUATION RADAR ACTIVE</span>
+            </div>
+            <span class="badge badge-accent">HUD v2.4</span>
+          </div>
+
+          <div class="blueprint-image-container">
+            <img src="/static/img/translucent_car_blueprint.jpg" alt="Translucent Car Architecture Blueprint" class="blueprint-img">
+            <div class="blueprint-scan-bar"></div>
+            
+            <!-- Floating Holographic Telemetry Overlays -->
+            <div class="blueprint-hud-chip chip-top-left">
+              <i class="fa-solid fa-microchip"></i>
+              <span>ENGINE: <strong id="hero-hud-engine">1497 cc</strong></span>
+            </div>
+            <div class="blueprint-hud-chip chip-top-right">
+              <i class="fa-solid fa-gauge-high"></i>
+              <span>ODOMETER: <strong id="hero-hud-km">38,000 km</strong></span>
+            </div>
+            <div class="blueprint-hud-chip chip-bottom-left">
+              <i class="fa-solid fa-gear"></i>
+              <span>TRANSMISSION: <strong id="hero-hud-trans">Automatic</strong></span>
+            </div>
+            <div class="blueprint-hud-chip chip-bottom-right">
+              <i class="fa-solid fa-shield-halved"></i>
+              <span>ACCURACY: <strong class="text-success">{{ metadata.achieved_accuracy }}</strong></span>
+            </div>
+          </div>
+
+          <div class="blueprint-footer">
+            <div class="blueprint-model-tag">
+              <i class="fa-solid fa-car-side"></i>
+              <span>Active Model: <strong>{{ metadata.best_model_name }} Regressor</strong></span>
+            </div>
+            <div class="blueprint-latency-tag">
+              <i class="fa-solid fa-bolt"></i> Latency: <strong>&lt; 15 ms</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Section: Interactive Valuation Estimator -->
+  <section id="estimator" class="section-padding">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i class="fa-solid fa-calculator"></i> Step 5: Interactive Web UI</div>
+        <h2 class="section-title">Instant Resale Price Estimator</h2>
+        <p class="section-subtitle">Fill in the vehicle parameters below or pick a quick test preset to get an instant fair market estimate.</p>
+      </div>
+
+      <!-- Quick Preset Selection Chips -->
+      <div class="presets-container">
+        <span class="presets-label"><i class="fa-solid fa-wand-magic-sparkles"></i> 1-Click Test Presets:</span>
+        <div class="preset-chips">
+          {% for preset in presets %}
+          <button class="preset-btn" data-preset='{{ preset | tojson }}'>
+            <i class="fa-solid fa-car"></i> {{ preset.name }}
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Interactive Translucent Vehicle Architecture X-Ray HUD -->
+      <div class="card glass-card car-xray-card mb-4">
+        <div class="card-header xray-card-header">
+          <div class="xray-title-group">
+            <i class="fa-solid fa-crosshairs text-accent"></i>
+            <div>
+              <h3 class="xray-heading">Translucent Vehicle Architecture HUD</h3>
+              <span class="xray-subheading">Live X-Ray Component Inspection & Real-Time Parameter Telemetry</span>
+            </div>
+          </div>
+          <div class="xray-header-pills">
+            <span class="badge badge-primary" id="xray-vehicle-badge"><i class="fa-solid fa-car"></i> Hyundai Creta (2021)</span>
+            <span class="badge badge-success"><span class="pulse-dot"></span> Live Sync Active</span>
+          </div>
+        </div>
+
+        <div class="card-body xray-card-body">
+          <div class="xray-panoramic-grid">
+            <!-- Left: Vector Translucent Blueprint Schematic -->
+            <div class="xray-svg-stage">
+              <div class="xray-stage-bg-grid"></div>
+              <div class="xray-laser-sweep" id="xray-laser-beam"></div>
+
+              <svg class="xray-chassis-svg" viewBox="0 0 900 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <!-- Glowing Gradients -->
+                  <linearGradient id="bodyGlowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9" />
+                    <stop offset="50%" stop-color="#818cf8" stop-opacity="0.7" />
+                    <stop offset="100%" stop-color="#c084fc" stop-opacity="0.9" />
+                  </linearGradient>
+
+                  <linearGradient id="glassRoofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.22" />
+                    <stop offset="100%" stop-color="#1e1b4b" stop-opacity="0.05" />
+                  </linearGradient>
+
+                  <linearGradient id="engineNeonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.8" />
+                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.9" />
+                  </linearGradient>
+
+                  <radialGradient id="hotspotGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8" />
+                    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
+                  </radialGradient>
+                  
+                  <filter id="neonBlur" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <!-- Grid Measurement Horizon Lines -->
+                <line x1="40" y1="190" x2="860" y2="190" stroke="rgba(255,255,255,0.06)" stroke-dasharray="4 4" />
+                <line x1="230" y1="40" x2="230" y2="340" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2 4" />
+                <line x1="470" y1="40" x2="470" y2="340" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2 4" />
+                <line x1="710" y1="40" x2="710" y2="340" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2 4" />
+
+                <!-- WHEELS (4 Alloy Wheels Wireframe) -->
+                <g id="svg-wheels" class="xray-group">
+                  <!-- Front Left Wheel -->
+                  <rect x="200" y="42" width="65" height="26" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="2" />
+                  <line x1="212" y1="42" x2="212" y2="68" stroke="#38bdf8" stroke-width="1.5" />
+                  <line x1="252" y1="42" x2="252" y2="68" stroke="#38bdf8" stroke-width="1.5" />
+                  <!-- Front Right Wheel -->
+                  <rect x="200" y="312" width="65" height="26" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="2" />
+                  <line x1="212" y1="312" x2="212" y2="338" stroke="#38bdf8" stroke-width="1.5" />
+                  <line x1="252" y1="312" x2="252" y2="338" stroke="#38bdf8" stroke-width="1.5" />
+
+                  <!-- Rear Left Wheel -->
+                  <rect x="680" y="42" width="65" height="26" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="2" />
+                  <line x1="692" y1="42" x2="692" y2="68" stroke="#38bdf8" stroke-width="1.5" />
+                  <line x1="732" y1="42" x2="732" y2="68" stroke="#38bdf8" stroke-width="1.5" />
+                  <!-- Rear Right Wheel -->
+                  <rect x="680" y="312" width="65" height="26" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="2" />
+                  <line x1="692" y1="312" x2="692" y2="338" stroke="#38bdf8" stroke-width="1.5" />
+                  <line x1="732" y1="312" x2="732" y2="338" stroke="#38bdf8" stroke-width="1.5" />
+
+                  <!-- Axle Crossbars -->
+                  <line x1="232" y1="68" x2="232" y2="312" stroke="rgba(56, 189, 248, 0.4)" stroke-width="3" />
+                  <line x1="712" y1="68" x2="712" y2="312" stroke="rgba(56, 189, 248, 0.4)" stroke-width="3" />
+                </g>
+
+                <!-- OUTER TRANSLUCENT CAR CHASSIS CONTOUR (Aerodynamic Top Profile) -->
+                <path d="M 80 190 
+                         C 80 150, 110 95, 170 85 
+                         C 220 75, 290 70, 360 68 
+                         C 430 65, 540 65, 640 70 
+                         C 720 75, 780 90, 810 120 
+                         C 835 145, 840 170, 840 190 
+                         C 840 210, 835 235, 810 260 
+                         C 780 290, 720 305, 640 310 
+                         C 540 315, 430 315, 360 312 
+                         C 290 310, 220 305, 170 295 
+                         C 110 285, 80 230, 80 190 Z" 
+                      fill="url(#glassRoofGrad)" 
+                      stroke="url(#bodyGlowGrad)" 
+                      stroke-width="2.5" 
+                      filter="url(#neonBlur)" />
+
+                <!-- TRANSLUCENT COCKPIT & WINDSHIELDS -->
+                <!-- Front Windshield -->
+                <path d="M 280 95 C 330 92, 380 92, 400 95 L 390 190 L 400 285 C 380 288, 330 288, 280 285 C 290 220, 290 160, 280 95 Z" 
+                      fill="rgba(56, 189, 248, 0.12)" stroke="rgba(56, 189, 248, 0.5)" stroke-width="1.5" />
+                <!-- Panoramic Glass Roof -->
+                <rect x="415" y="96" width="180" height="188" rx="16" fill="rgba(129, 140, 248, 0.1)" stroke="rgba(129, 140, 248, 0.5)" stroke-width="1.5" />
+                <!-- Rear Windshield Glass -->
+                <path d="M 610 102 C 650 110, 680 125, 700 145 L 705 190 L 700 235 C 680 255, 650 270, 610 278 Z" 
+                      fill="rgba(56, 189, 248, 0.12)" stroke="rgba(56, 189, 248, 0.5)" stroke-width="1.5" />
+
+                <!-- COMPONENT 1: ENGINE BAY (Front Compartment) -->
+                <g id="svg-engine-bay" class="xray-group">
+                  <rect x="120" y="125" width="105" height="130" rx="12" fill="rgba(6, 182, 212, 0.18)" stroke="#06b6d4" stroke-width="2" filter="url(#neonBlur)" />
+                  <!-- Cylinders & Manifold -->
+                  <circle cx="150" cy="155" r="14" fill="#0e7490" stroke="#22d3ee" stroke-width="1.5" />
+                  <circle cx="150" cy="190" r="14" fill="#0e7490" stroke="#22d3ee" stroke-width="1.5" />
+                  <circle cx="150" cy="225" r="14" fill="#0e7490" stroke="#22d3ee" stroke-width="1.5" />
+                  <rect x="180" y="145" width="30" height="90" rx="6" fill="#155e75" stroke="#22d3ee" stroke-width="1.5" />
+                  <path d="M 195 145 L 225 125" stroke="#38bdf8" stroke-width="2" />
+                  <text x="172" y="105" fill="#38bdf8" font-size="11" font-weight="700" font-family="'JetBrains Mono', monospace">ENGINE BAY</text>
+                </g>
+
+                <!-- COMPONENT 2: TRANSMISSION MODULE & DRIVE SHAFT -->
+                <g id="svg-transmission" class="xray-group">
+                  <!-- Gearbox Box -->
+                  <rect x="240" y="165" width="75" height="50" rx="8" fill="rgba(168, 85, 247, 0.25)" stroke="#c084fc" stroke-width="2" />
+                  <circle cx="277" cy="190" r="12" fill="#581c87" stroke="#e879f9" stroke-width="1.5" stroke-dasharray="4 2" />
+                  <!-- Longitudinal Drive Shaft -->
+                  <rect x="315" y="186" width="375" height="8" rx="4" fill="rgba(192, 132, 252, 0.6)" stroke="#c084fc" stroke-width="1" />
+                  <text x="245" y="235" fill="#c084fc" font-size="11" font-weight="700" font-family="'JetBrains Mono', monospace">TRANSMISSION</text>
+                </g>
+
+                <!-- COMPONENT 3: CABIN INTERIOR SEATS -->
+                <g id="svg-cabin" class="xray-group">
+                  <!-- Front Driver Seat -->
+                  <rect x="430" y="112" width="46" height="50" rx="8" fill="rgba(59, 130, 246, 0.2)" stroke="#60a5fa" stroke-width="1.5" />
+                  <!-- Front Passenger Seat -->
+                  <rect x="430" y="218" width="46" height="50" rx="8" fill="rgba(59, 130, 246, 0.2)" stroke="#60a5fa" stroke-width="1.5" />
+                  <!-- Rear Passenger Row -->
+                  <rect x="525" y="112" width="48" height="46" rx="7" fill="rgba(59, 130, 246, 0.15)" stroke="#60a5fa" stroke-width="1.5" />
+                  <rect x="525" y="167" width="48" height="46" rx="7" fill="rgba(59, 130, 246, 0.15)" stroke="#60a5fa" stroke-width="1.5" />
+                  <rect x="525" y="222" width="48" height="46" rx="7" fill="rgba(59, 130, 246, 0.15)" stroke="#60a5fa" stroke-width="1.5" />
+                  <!-- Steering wheel -->
+                  <circle cx="395" cy="137" r="12" stroke="#93c5fd" stroke-width="2" fill="none" />
+                  <line x1="395" y1="125" x2="395" y2="149" stroke="#93c5fd" stroke-width="1.5" />
+                  <text x="460" y="88" fill="#93c5fd" font-size="11" font-weight="700" font-family="'JetBrains Mono', monospace">CABIN (5-SEATS)</text>
+                </g>
+
+                <!-- COMPONENT 4: FUEL CELL & EXHAUST LINE -->
+                <g id="svg-fuel" class="xray-group">
+                  <rect x="620" y="145" width="70" height="90" rx="10" fill="rgba(245, 158, 11, 0.2)" stroke="#f59e0b" stroke-width="2" />
+                  <line x1="620" y1="190" x2="690" y2="190" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3 3" />
+                  <!-- Exhaust Pipes -->
+                  <path d="M 690 170 L 805 170 L 820 160" stroke="#f59e0b" stroke-width="2" fill="none" />
+                  <path d="M 690 210 L 805 210 L 820 220" stroke="#f59e0b" stroke-width="2" fill="none" />
+                  <text x="625" y="132" fill="#fbbf24" font-size="11" font-weight="700" font-family="'JetBrains Mono', monospace">FUEL CELL</text>
+                </g>
+
+                <!-- INTERACTIVE HUD HOTSPOT PINS -->
+                <!-- Engine Pin -->
+                <g class="xray-pin" transform="translate(170, 190)">
+                  <circle cx="0" cy="0" r="14" fill="url(#hotspotGlow)" />
+                  <circle cx="0" cy="0" r="6" fill="#06b6d4" />
+                  <circle cx="0" cy="0" r="10" stroke="#22d3ee" stroke-width="1.5" class="pin-ring" />
+                </g>
+                <!-- Transmission Pin -->
+                <g class="xray-pin" transform="translate(277, 190)">
+                  <circle cx="0" cy="0" r="14" fill="url(#hotspotGlow)" />
+                  <circle cx="0" cy="0" r="6" fill="#c084fc" />
+                  <circle cx="0" cy="0" r="10" stroke="#e879f9" stroke-width="1.5" class="pin-ring" />
+                </g>
+                <!-- Cabin Pin -->
+                <g class="xray-pin" transform="translate(480, 190)">
+                  <circle cx="0" cy="0" r="14" fill="url(#hotspotGlow)" />
+                  <circle cx="0" cy="0" r="6" fill="#3b82f6" />
+                  <circle cx="0" cy="0" r="10" stroke="#60a5fa" stroke-width="1.5" class="pin-ring" />
+                </g>
+                <!-- Fuel Pin -->
+                <g class="xray-pin" transform="translate(655, 190)">
+                  <circle cx="0" cy="0" r="14" fill="url(#hotspotGlow)" />
+                  <circle cx="0" cy="0" r="6" fill="#f59e0b" />
+                  <circle cx="0" cy="0" r="10" stroke="#fbbf24" stroke-width="1.5" class="pin-ring" />
+                </g>
+              </svg>
+            </div>
+
+            <!-- Right: Real-time Component Telemetry Cards -->
+            <div class="xray-telemetry-col">
+              <div class="xray-node-card node-engine">
+                <div class="node-icon"><i class="fa-solid fa-microchip"></i></div>
+                <div class="node-content">
+                  <div class="node-label">Powertrain & Displacement</div>
+                  <div class="node-value" id="hud-val-engine">1,497 cc &bull; 113.4 bhp</div>
+                  <div class="node-sub" id="hud-val-power-ratio">Specific output: 75.8 bhp/L</div>
+                </div>
+              </div>
+
+              <div class="xray-node-card node-trans">
+                <div class="node-icon"><i class="fa-solid fa-gear"></i></div>
+                <div class="node-content">
+                  <div class="node-label">Drivetrain & Gearbox</div>
+                  <div class="node-value" id="hud-val-trans">Automatic Gearbox</div>
+                  <div class="node-sub" id="hud-val-trans-mode">+7% Resale retention premium</div>
+                </div>
+              </div>
+
+              <div class="xray-node-card node-km">
+                <div class="node-icon"><i class="fa-solid fa-road"></i></div>
+                <div class="node-content">
+                  <div class="node-label">Chassis Mileage & Odometry</div>
+                  <div class="node-value" id="hud-val-km">38,000 km</div>
+                  <div class="node-sub" id="hud-val-km-intensity">7,600 km/year &bull; Moderate usage</div>
+                </div>
+              </div>
+
+              <div class="xray-node-card node-fuel">
+                <div class="node-icon"><i class="fa-solid fa-gas-pump"></i></div>
+                <div class="node-content">
+                  <div class="node-label">Fuel System & Economy</div>
+                  <div class="node-value" id="hud-val-fuel">Diesel &bull; 16.8 kmpl</div>
+                  <div class="node-sub" id="hud-val-fuel-demand">High-efficiency highway touring</div>
+                </div>
+              </div>
+
+              <div class="xray-node-card node-cabin">
+                <div class="node-icon"><i class="fa-solid fa-chair"></i></div>
+                <div class="node-content">
+                  <div class="node-label">Cabin & Ownership Record</div>
+                  <div class="node-value" id="hud-val-owner">1st Owner &bull; 5 Seater</div>
+                  <div class="node-sub" id="hud-val-deprec">Full service history retention</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="estimator-layout">
+        <!-- Input Form Card -->
+        <div class="card form-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-sliders"></i> Vehicle Specifications</h3>
+            <span class="badge badge-primary">Model: {{ metadata.best_model_name }}</span>
+          </div>
+          <div class="card-body">
+            <form id="price-form">
+              <!-- Row 1: Brand & Model -->
+              <div class="form-row">
+                <div class="form-group col-6">
+                  <label for="brand-select"><i class="fa-solid fa-shield-halved"></i> Brand / Manufacturer</label>
+                  <select id="brand-select" class="form-control" required>
+                    {% for brand in metadata.brand_models_map.keys() %}
+                    <option value="{{ brand }}" {% if brand == 'Hyundai' %}selected{% endif %}>{{ brand }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group col-6">
+                  <label for="model-select"><i class="fa-solid fa-car"></i> Model Variant</label>
+                  <select id="model-select" class="form-control" required>
+                    <!-- Populated dynamically via JS -->
+                  </select>
+                </div>
+              </div>
+
+              <!-- Row 2: Year & Km Driven -->
+              <div class="form-row">
+                <div class="form-group col-6">
+                  <label for="year-input"><i class="fa-solid fa-calendar-days"></i> Manufacturing Year</label>
+                  <div class="input-with-label">
+                    <input type="number" id="year-input" class="form-control" min="2010" max="2025" value="2021" required>
+                    <span class="input-unit" id="age-calc-tag">Age: 5 yrs</span>
+                  </div>
+                </div>
+                <div class="form-group col-6">
+                  <label for="km-input"><i class="fa-solid fa-gauge-high"></i> Kilometers Driven</label>
+                  <div class="input-with-label">
+                    <input type="number" id="km-input" class="form-control" min="1000" max="250000" step="500" value="38000" required>
+                    <span class="input-unit">km</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Row 3: Fuel Type, Transmission, Owner -->
+              <div class="form-row">
+                <div class="form-group col-4">
+                  <label for="fuel-select"><i class="fa-solid fa-gas-pump"></i> Fuel Type</label>
+                  <select id="fuel-select" class="form-control" required>
+                    <option value="Petrol">Petrol</option>
+                    <option value="Diesel" selected>Diesel</option>
+                    <option value="CNG">CNG</option>
+                  </select>
+                </div>
+                <div class="form-group col-4">
+                  <label for="trans-select"><i class="fa-solid fa-gear"></i> Transmission</label>
+                  <select id="trans-select" class="form-control" required>
+                    <option value="Manual">Manual</option>
+                    <option value="Automatic" selected>Automatic</option>
+                  </select>
+                </div>
+                <div class="form-group col-4">
+                  <label for="owner-select"><i class="fa-solid fa-user-check"></i> Ownership</label>
+                  <select id="owner-select" class="form-control" required>
+                    <option value="First Owner" selected>1st Owner</option>
+                    <option value="Second Owner">2nd Owner</option>
+                    <option value="Third Owner">3rd Owner</option>
+                    <option value="Fourth & Above">4th+ Owner</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Technical Specifications (Collapsible / Advanced) -->
+              <div class="advanced-specs-toggle" id="toggle-specs-btn">
+                <span><i class="fa-solid fa-microchip"></i> Technical Engine Specs (Auto-Filled)</span>
+                <i class="fa-solid fa-chevron-down" id="specs-chevron"></i>
+              </div>
+
+              <div class="advanced-specs-body" id="specs-body">
+                <div class="form-row">
+                  <div class="form-group col-3">
+                    <label for="engine-input">Engine Size</label>
+                    <div class="input-with-label">
+                      <input type="number" id="engine-input" class="form-control" value="1497">
+                      <span class="input-unit">cc</span>
+                    </div>
+                  </div>
+                  <div class="form-group col-3">
+                    <label for="power-input">Max Power</label>
+                    <div class="input-with-label">
+                      <input type="number" step="0.1" id="power-input" class="form-control" value="113.4">
+                      <span class="input-unit">bhp</span>
+                    </div>
+                  </div>
+                  <div class="form-group col-3">
+                    <label for="mileage-input">Mileage</label>
+                    <div class="input-with-label">
+                      <input type="number" step="0.1" id="mileage-input" class="form-control" value="16.8">
+                      <span class="input-unit">kmpl</span>
+                    </div>
+                  </div>
+                  <div class="form-group col-3">
+                    <label for="seats-input">Seats</label>
+                    <select id="seats-input" class="form-control">
+                      <option value="4">4 Seater</option>
+                      <option value="5" selected>5 Seater</option>
+                      <option value="7">7 Seater</option>
+                      <option value="8">8 Seater</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="form-actions">
+                <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Calculate Fair Price
+                </button>
+                <button type="button" id="reset-btn" class="btn btn-secondary">
+                  <i class="fa-solid fa-arrow-rotate-left"></i> Reset
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Result Valuation Card -->
+        <div class="card result-card" id="result-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-receipt"></i> Valuation Appraisal Summary</h3>
+            <span id="latency-tag" class="badge badge-info"><i class="fa-regular fa-clock"></i> &lt; 15 ms</span>
+          </div>
+          <div class="card-body">
+            <!-- Price Display Hero -->
+            <div class="price-display-box">
+              <span class="price-lead-label">Estimated Fair Market Value</span>
+              <div class="price-highlight" id="res-price-lakhs">₹ 10.42 Lakhs</div>
+              <div class="price-sub-inr" id="res-price-inr">₹ 10,42,000</div>
+              <div class="price-badge-row">
+                <span class="badge badge-accent" id="res-model-badge">Engine: Gradient Boosting</span>
+                <span class="badge badge-success">High Confidence</span>
+              </div>
+            </div>
+
+            <!-- Fair Negotiation Range -->
+            <div class="negotiation-band">
+              <div class="band-label-row">
+                <span><i class="fa-solid fa-handshake"></i> Recommended Fair Negotiation Range</span>
+                <span class="band-val" id="res-range-str">₹ 9.90L – ₹ 10.94L</span>
+              </div>
+              <div class="band-visual">
+                <div class="band-bar">
+                  <span class="marker marker-min">Buyer Target</span>
+                  <span class="marker marker-fair">Fair Price</span>
+                  <span class="marker marker-max">Seller Ceiling</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Value Driver Breakdown -->
+            <div class="drivers-grid">
+              <div class="driver-card">
+                <div class="driver-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+                <div class="driver-title">Vehicle Age</div>
+                <div class="driver-val" id="res-age-driver">5 Years</div>
+                <div class="driver-desc">Depreciation baseline</div>
+              </div>
+              <div class="driver-card">
+                <div class="driver-icon"><i class="fa-solid fa-road"></i></div>
+                <div class="driver-title">Usage Rate</div>
+                <div class="driver-val" id="res-km-year-driver">7,600 km/yr</div>
+                <div class="driver-desc">Low / moderate usage</div>
+              </div>
+              <div class="driver-card">
+                <div class="driver-icon"><i class="fa-solid fa-tag"></i></div>
+                <div class="driver-title">Depreciation</div>
+                <div class="driver-val" id="res-deprec-driver">~34%</div>
+                <div class="driver-desc">From new showroom price</div>
+              </div>
+              <div class="driver-card">
+                <div class="driver-icon"><i class="fa-solid fa-gauge"></i></div>
+                <div class="driver-title">Efficiency</div>
+                <div class="driver-val" id="res-fuel-driver">High</div>
+                <div class="driver-desc">Market demand factor</div>
+              </div>
+            </div>
+
+            <!-- Negotiation Tip Box -->
+            <div class="insight-box">
+              <i class="fa-solid fa-lightbulb"></i>
+              <div class="insight-text" id="res-tip">
+                Recommended offer band: ₹ 9.90L for direct individual transfer, up to ₹ 10.94L for certified dealer condition with warranty.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Model Evaluation Dashboard (PPT Requirement 6) -->
+  <section id="dashboard" class="section-padding bg-darker">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i class="fa-solid fa-chart-pie"></i> Step 6: Model Evaluation Dashboard</div>
+        <h2 class="section-title">Model Performance & Feature Importance</h2>
+        <p class="section-subtitle">Comparative evaluation of candidate regression models and analysis of key factors driving pre-owned vehicle prices.</p>
+      </div>
+
+      <!-- Key KPI Cards -->
+      <div class="kpi-grid">
+        <div class="card kpi-card">
+          <div class="kpi-header">
+            <span>Target R² Accuracy</span>
+            <i class="fa-solid fa-bullseye kpi-icon"></i>
+          </div>
+          <div class="kpi-value text-accent">85%+</div>
+          <div class="kpi-subtext">Stated in PPT Goal</div>
+        </div>
+
+        <div class="card kpi-card">
+          <div class="kpi-header">
+            <span>Achieved Test R² Score</span>
+            <i class="fa-solid fa-award kpi-icon text-success"></i>
+          </div>
+          <div class="kpi-value text-success" id="kpi-r2">{{ metadata.achieved_accuracy }}</div>
+          <div class="kpi-subtext">Gradient Boosting Regressor</div>
+        </div>
+
+        <div class="card kpi-card">
+          <div class="kpi-header">
+            <span>Mean Absolute Error (MAE)</span>
+            <i class="fa-solid fa-arrows-split-up-and-left kpi-icon"></i>
+          </div>
+          <div class="kpi-value">₹ 0.37L</div>
+          <div class="kpi-subtext">Average prediction error margin</div>
+        </div>
+
+        <div class="card kpi-card">
+          <div class="kpi-header">
+            <span>Prediction Latency</span>
+            <i class="fa-solid fa-stopwatch kpi-icon"></i>
+          </div>
+          <div class="kpi-value">&lt; 15 ms</div>
+          <div class="kpi-subtext">Exceeds &lt; 1s target requirement</div>
+        </div>
+      </div>
+
+      <!-- Charts Row 1: Model Comparison & Error Metrics -->
+      <div class="charts-grid">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-chart-column"></i> R² Score Comparison (Model Benchmark)</h3>
+            <span class="badge badge-success">Target Exceeded</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrapper">
+              <canvas id="modelComparisonChart"></canvas>
+            </div>
+            <p class="chart-caption">Comparison of Linear Regression, Random Forest, and Gradient Boosting on 738 held-out test listings.</p>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-chart-bar"></i> Error Metrics Benchmark (MAE vs RMSE)</h3>
+            <span class="badge badge-info">Lower is Better</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrapper">
+              <canvas id="errorMetricsChart"></canvas>
+            </div>
+            <p class="chart-caption">Gradient Boosting achieves lowest error (MAE: ₹0.37L, RMSE: ₹0.64L), providing optimal precision.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2: Feature Importance & Depreciation Trend -->
+      <div class="charts-grid mt-4">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-dna"></i> Feature Importance Ranking (Transparency)</h3>
+            <span class="badge badge-primary">Tree Explainability</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrapper">
+              <canvas id="featureImportanceChart"></canvas>
+            </div>
+            <p class="chart-caption">Vehicle Age (45.9%), Engine Displacement (25.7%), and Max Power (15.8%) comprise over 87% of price variance.</p>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-arrow-trend-down"></i> Depreciation vs. Age Curve</h3>
+            <span class="badge badge-accent">Non-linear Decay</span>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrapper">
+              <canvas id="depreciationTrendChart"></canvas>
+            </div>
+            <p class="chart-caption">Simulated residual value trajectory across Hatchbacks, Sedans, and Premium SUVs over 12 years.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Dataset & Market Explorer -->
+  <section id="dataset" class="section-padding">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i class="fa-solid fa-database"></i> Step 1 & 2: Data Ingestion & Engineering</div>
+        <h2 class="section-title">Dataset & Feature Pipeline Explorer</h2>
+        <p class="section-subtitle">Cleaned historical marketplace data with missing-value imputation, outlier removal, and derived features.</p>
+      </div>
+
+      <!-- Dataset summary pills -->
+      <div class="dataset-stats-bar">
+        <div class="dstat">
+          <span class="dstat-val">{{ metadata.dataset_summary.total_records }}</span>
+          <span class="dstat-label">Cleaned Listings</span>
+        </div>
+        <div class="dstat">
+          <span class="dstat-val">{{ metadata.dataset_summary.brands_count }}</span>
+          <span class="dstat-label">Automobile Brands</span>
+        </div>
+        <div class="dstat">
+          <span class="dstat-val">{{ metadata.dataset_summary.models_count }}</span>
+          <span class="dstat-label">Vehicle Models</span>
+        </div>
+        <div class="dstat">
+          <span class="dstat-val">₹ {{ metadata.dataset_summary.price_min }}L – ₹ {{ metadata.dataset_summary.price_max }}L</span>
+          <span class="dstat-label">Price Range</span>
+        </div>
+        <div class="dstat">
+          <span class="dstat-val">₹ {{ metadata.dataset_summary.price_median }}L</span>
+          <span class="dstat-label">Median Selling Price</span>
+        </div>
+      </div>
+
+      <!-- Interactive Sample Table -->
+      <div class="card table-card">
+        <div class="card-header table-header-flex">
+          <h3><i class="fa-solid fa-table"></i> Sample Training Listings Preview</h3>
+          <button id="refresh-dataset-btn" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-shuffle"></i> Load New Sample
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="dataset-table">
+            <thead>
+              <tr>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Year</th>
+                <th>Km Driven</th>
+                <th>Fuel</th>
+                <th>Transmission</th>
+                <th>Owner</th>
+                <th>Engine (cc)</th>
+                <th>Power (bhp)</th>
+                <th>Mileage (kmpl)</th>
+                <th>Price (₹ Lakhs)</th>
+              </tr>
+            </thead>
+            <tbody id="dataset-tbody">
+              <!-- Rendered via JS -->
+              <tr><td colspan="11" class="text-center">Loading sample records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: REST API Explorer (PPT Requirement 4) -->
+  <section id="api-docs" class="section-padding bg-darker">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i class="fa-solid fa-plug"></i> Step 4: Price Prediction REST API</div>
+        <h2 class="section-title">Developer REST API & Interactive Console</h2>
+        <p class="section-subtitle">Serve the trained regression model behind a high-performance REST endpoint for real-time third-party integrations.</p>
+      </div>
+
+      <div class="api-grid">
+        <!-- API Specs & Documentation -->
+        <div class="card api-docs-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-file-code"></i> Endpoint Specification</h3>
+            <span class="badge badge-success">POST /api/predict</span>
+          </div>
+          <div class="card-body">
+            <p>Send vehicle specification attributes as a JSON payload to receive an instant machine-learning valuation.</p>
+            
+            <div class="code-block-header">
+              <span>cURL Request Example</span>
+              <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('curl-sample').innerText)"><i class="fa-regular fa-copy"></i></button>
+            </div>
+            <pre class="code-box"><code id="curl-sample">curl -X POST http://127.0.0.1:5001/api/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "brand": "Hyundai",
+    "model": "Creta",
+    "year": 2021,
+    "km_driven": 38000,
+    "fuel_type": "Diesel",
+    "transmission": "Automatic",
+    "owner": "First Owner",
+    "engine_cc": 1497,
+    "max_power_bhp": 113.4,
+    "mileage_kmpl": 16.8,
+    "seats": 5
+  }'</code></pre>
+
+            <div class="code-block-header mt-3">
+              <span>JSON Response Schema (&lt; 15ms)</span>
+            </div>
+            <pre class="code-box"><code>{
+  "status": "success",
+  "prediction": {
+    "price_lakhs": 10.42,
+    "price_inr": 1042000,
+    "formatted_lakhs": "₹ 10.42 Lakhs",
+    "formatted_inr": "₹ 10,42,000",
+    "valuation_range": {
+      "lower_lakhs": 9.9,
+      "upper_lakhs": 10.94,
+      "range_formatted": "₹ 9.90L – ₹ 10.94L"
+    },
+    "latency_ms": 11.2,
+    "model_used": "Gradient Boosting"
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- Interactive API Console -->
+        <div class="card api-tester-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-terminal"></i> Live Interactive API Tester</h3>
+            <button id="send-api-test-btn" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-play"></i> Send Live Request
+            </button>
+          </div>
+          <div class="card-body">
+            <label class="input-label">Request Payload (Editable JSON):</label>
+            <textarea id="api-request-json" class="form-control code-editor" rows="10">{
+  "brand": "Toyota",
+  "model": "Fortuner",
+  "year": 2020,
+  "km_driven": 72000,
+  "fuel_type": "Diesel",
+  "transmission": "Automatic",
+  "owner": "First Owner",
+  "engine_cc": 2755,
+  "max_power_bhp": 201.1,
+  "mileage_kmpl": 10.0,
+  "seats": 7
+}</textarea>
+
+            <label class="input-label mt-3">Live Server Response:</label>
+            <pre class="code-box response-box"><code id="api-response-json">// Click "Send Live Request" to test endpoint...</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Course & Project Details (Direct from PPT) -->
+  <section id="about" class="section-padding">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag"><i class="fa-solid fa-book-open"></i> Academic Project Documentation</div>
+        <h2 class="section-title">Course Presentation & Methodology</h2>
+        <p class="section-subtitle">Comprehensive documentation of the Machine Learning course project at KLH University.</p>
+      </div>
+
+      <!-- Problem Statement Cards (From PPT Slide 2 & 3) -->
+      <div class="info-subheading">
+        <i class="fa-solid fa-triangle-exclamation"></i> Problem Statement Addressed
+      </div>
+      <div class="problem-grid">
+        <div class="card problem-card">
+          <div class="prob-num">01</div>
+          <h4 class="prob-title">No Standard Valuation</h4>
+          <p class="prob-desc">Sellers overprice and buyers underbid, since there is no consistent, data-driven reference price in the pre-owned market.</p>
+        </div>
+        <div class="card problem-card">
+          <div class="prob-num">02</div>
+          <h4 class="prob-title">Too Many Interacting Variables</h4>
+          <p class="prob-desc">Age, mileage, brand prestige, fuel type, transmission, and ownership history interact non-linearly with depreciation.</p>
+        </div>
+        <div class="card problem-card">
+          <div class="prob-num">03</div>
+          <h4 class="prob-title">Manual Appraisal is Slow & Costly</h4>
+          <p class="prob-desc">Dealership or manual expert appraisal takes days, incurs expenses, and fails to scale to digital marketplaces.</p>
+        </div>
+        <div class="card problem-card">
+          <div class="prob-num">04</div>
+          <h4 class="prob-title">Risk of Fraud & Mispricing</h4>
+          <p class="prob-desc">Buyers risk being misled by inflated listings, while private sellers unknowingly undersell high-demand vehicles.</p>
+        </div>
+      </div>
+
+      <!-- 6 Proposed Functionalities Flowchart (From PPT Slide 4) -->
+      <div class="info-subheading mt-5">
+        <i class="fa-solid fa-list-check"></i> 6 Proposed Functionalities (Implemented)
+      </div>
+      <div class="pipeline-grid">
+        <div class="pipeline-step">
+          <div class="p-step-badge">1</div>
+          <div class="p-step-title">Data Ingestion & Cleaning</div>
+          <p class="p-step-text">Import datasets, drop duplicates, impute missing values, and handle statistical outliers.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="p-step-badge">2</div>
+          <div class="p-step-title">Feature Engineering</div>
+          <p class="p-step-text">Derive vehicle age, mileage/year intensity, power-to-engine ratio, and encode categorical variables.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="p-step-badge">3</div>
+          <div class="p-step-title">Model Training & Benchmarking</div>
+          <p class="p-step-text">Train and compare Linear Regression, Random Forest, and Gradient Boosting regressors.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="p-step-badge">4</div>
+          <div class="p-step-title">Price Prediction REST API</div>
+          <p class="p-step-text">Serve best regression pipeline via a fast REST endpoint with sub-second response times.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="p-step-badge">5</div>
+          <div class="p-step-title">Interactive Web UI</div>
+          <p class="p-step-text">Sleek, responsive web interface with auto-fill specs, presets, and instant appraisal feedback.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="p-step-badge">6</div>
+          <div class="p-step-title">Evaluation Dashboard</div>
+          <p class="p-step-text">Interactive charts displaying R², MAE, RMSE metrics and feature importance explainability.</p>
+        </div>
+      </div>
+
+      <!-- Academic Metadata & Team Card -->
+      <div class="card credits-card mt-5">
+        <div class="credits-grid">
+          <div class="credits-institution">
+            <div class="inst-logo"><i class="fa-solid fa-landmark"></i></div>
+            <h4>Koneru Lakshmaiah Education Foundation</h4>
+            <div class="inst-campus">KLH University – Bowrampet Campus, Hyderabad</div>
+            <div class="course-name">Course: Machine Learning &bull; Academic Semester 2026</div>
+            <div class="guide-box">
+              <span class="guide-label">Project Guide:</span>
+              <span class="guide-name">Dr. G. S. Raghavendra Sir</span>
+            </div>
+          </div>
+
+          <div class="credits-team">
+            <h4><i class="fa-solid fa-user-group"></i> Project Developers</h4>
+            <div class="team-list">
+              <div class="team-member">
+                <div class="member-avatar">BR</div>
+                <div class="member-info">
+                  <div class="member-name">B Rishik</div>
+                  <div class="member-id">ID: 2520030314</div>
+                </div>
+              </div>
+              <div class="team-member">
+                <div class="member-avatar">RV</div>
+                <div class="member-info">
+                  <div class="member-name">Rohan V</div>
+                  <div class="member-id">ID: 2520030558</div>
+                </div>
+              </div>
+              <div class="team-member">
+                <div class="member-avatar">MN</div>
+                <div class="member-info">
+                  <div class="member-name">M Nityay</div>
+                  <div class="member-id">ID: 2520030618</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="container footer-content">
+      <div>
+        <strong>Used Car Price Estimator</strong> &bull; Supervised Regression ML Web System
+      </div>
+      <div class="footer-meta">
+        KLH University &bull; Built with Python, Scikit-learn, Pandas & Flask
+      </div>
+    </div>
+  </footer>
+
+  <!-- Pass server-side metadata to JS -->
+  <script>
+    window.APP_METADATA = {{ metadata | tojson }};
+  </script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
